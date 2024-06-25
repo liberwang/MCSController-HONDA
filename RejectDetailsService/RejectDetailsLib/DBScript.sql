@@ -1,0 +1,183 @@
+﻿USE [master]
+GO
+
+/****** Object:  Database [MCS]    Script Date: 12/25/2021 4:09:04 PM ******/
+CREATE DATABASE [MCS]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'mcs', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\mcs.mdf' , SIZE = 270336KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'mcs_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\mcs_log.ldf' , SIZE = 794624KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [MCS].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+
+ALTER DATABASE [MCS] SET ANSI_NULL_DEFAULT OFF 
+GO
+
+ALTER DATABASE [MCS] SET ANSI_NULLS OFF 
+GO
+
+ALTER DATABASE [MCS] SET ANSI_PADDING OFF 
+GO
+
+ALTER DATABASE [MCS] SET ANSI_WARNINGS OFF 
+GO
+
+ALTER DATABASE [MCS] SET ARITHABORT OFF 
+GO
+
+ALTER DATABASE [MCS] SET AUTO_CLOSE OFF 
+GO
+
+ALTER DATABASE [MCS] SET AUTO_SHRINK OFF 
+GO
+
+ALTER DATABASE [MCS] SET AUTO_UPDATE_STATISTICS ON 
+GO
+
+ALTER DATABASE [MCS] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+
+ALTER DATABASE [MCS] SET CURSOR_DEFAULT  GLOBAL 
+GO
+
+ALTER DATABASE [MCS] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+
+ALTER DATABASE [MCS] SET NUMERIC_ROUNDABORT OFF 
+GO
+
+ALTER DATABASE [MCS] SET QUOTED_IDENTIFIER OFF 
+GO
+
+ALTER DATABASE [MCS] SET RECURSIVE_TRIGGERS OFF 
+GO
+
+ALTER DATABASE [MCS] SET  DISABLE_BROKER 
+GO
+
+ALTER DATABASE [MCS] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+
+ALTER DATABASE [MCS] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+
+ALTER DATABASE [MCS] SET TRUSTWORTHY OFF 
+GO
+
+ALTER DATABASE [MCS] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+
+ALTER DATABASE [MCS] SET PARAMETERIZATION SIMPLE 
+GO
+
+ALTER DATABASE [MCS] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+
+ALTER DATABASE [MCS] SET HONOR_BROKER_PRIORITY OFF 
+GO
+
+ALTER DATABASE [MCS] SET RECOVERY SIMPLE 
+GO
+
+ALTER DATABASE [MCS] SET  MULTI_USER 
+GO
+
+ALTER DATABASE [MCS] SET PAGE_VERIFY CHECKSUM  
+GO
+
+ALTER DATABASE [MCS] SET DB_CHAINING OFF 
+GO
+
+ALTER DATABASE [MCS] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+
+ALTER DATABASE [MCS] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+
+ALTER DATABASE [MCS] SET DELAYED_DURABILITY = DISABLED 
+GO
+
+ALTER DATABASE [MCS] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+
+ALTER DATABASE [MCS] SET QUERY_STORE = OFF
+GO
+
+ALTER DATABASE [MCS] SET  READ_WRITE 
+GO
+
+/***********************************************************************************************/
+/*create mcs user */
+--USE [master]
+--GO
+
+--/* For security reasons the login is created disabled and with a random password. */
+--/****** Object:  Login [mcs]    Script Date: 12/26/2021 5:46:37 PM ******/
+--CREATE LOGIN [mcs] WITH PASSWORD=N'XXr7zOoQJs+u3OSWJQIUC5ukUulpzQ6lcdd/DkBgcAs=', DEFAULT_DATABASE=[MCS], DEFAULT_LANGUAGE=[us_english], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
+--GO
+
+--ALTER LOGIN [mcs] DISABLE
+--GO
+
+--ALTER SERVER ROLE [sysadmin] ADD MEMBER [mcs]
+--GO
+
+/***********************************************************************************************/
+/* create tables */
+USE [MCS]
+GO
+
+
+/****** Object:  Table [dbo].[tblTagContent]    Script Date: 12/30/2021 9:25:55 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tblTagContent]') AND type in (N'U'))
+DROP TABLE [dbo].[tblTagContent]
+GO
+
+/****** Object:  Table [dbo].[tblTagContent]    Script Date: 12/30/2021 9:25:55 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblTagContent](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[tag_cont] [varchar](max) NULL,
+	[tag_add_dt] [datetime] NULL,
+	[controller_ip] [varchar](15) NULL,
+	[category_id] [int] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[tblTagContent] ADD  CONSTRAINT [DF_tblTagContent_tag_add_dt]  DEFAULT (getdate()) FOR [tag_add_dt]
+GO
+
+/******************************tblController*********************************************************/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tblController]') AND type in (N'U'))
+DROP TABLE [dbo].[tblController]
+GO
+
+/****** Object:  Table [dbo].[tblController]    Script Date: 1/29/2022 10:15:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblController](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[ip_address] [varchar](15) NOT NULL,
+	[description] [varchar](256) NULL,
+ CONSTRAINT [PK_tblController] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
